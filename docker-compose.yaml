@@ -1,0 +1,35 @@
+networks:
+  mgmt_net:
+  instance_net:
+
+services:
+  backend:
+    build: ./
+    restart: unless-stopped
+    depends_on:
+      valkey-mgmt:
+        condition: service_healthy
+    networks:
+      - mgmt_net
+      - instance_net
+    environment:
+      - VALDOCK_VALKEY_URL=valkey-mgmt:6379
+      - VALDOCK_HOST=0.0.0.0
+      - VALDOCK_PORT=8080
+      - VALDOCK_INSTANCE_NET=instance_net
+    ports:
+      - 8080:8080
+
+  valkey-mgmt:
+    image: valkey/valkey:latest
+    command: ["valkey-server", "--save", "60", "1", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 2s
+      timeout: 1s
+      retries: 10
+    restart: unless-stopped
+    volumes:
+      - ./data/valkey-mgmt:/data
+    networks:
+      - mgmt_net
