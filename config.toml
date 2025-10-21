@@ -1,9 +1,0 @@
-[server]
-host="127.0.0.1"
-port=8082
-
-[kv]
-url="valkey-mgmt:6379"
-
-[docker]
-instance_net="instance_net"

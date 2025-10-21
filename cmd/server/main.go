@@ -16,6 +16,9 @@ func main() {
 	cfg.Server.Host = "127.0.0.1"
 	cfg.Server.Port = 8080
 
+	cfg.PortAllocator.MinPort = 6380
+	cfg.PortAllocator.MaxPort = 7380
+
 	cfgLoader := cascade.NewLoader(
 		cascade.WithEnvPrefix("VALDOCK"),
 		cascade.WithFlags(),

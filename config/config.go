@@ -13,4 +13,8 @@ type ValdockConfig struct {
 			Net string `yaml:"net" toml:"net" env:"instance_net" flag:"instance-net"`
 		}
 	}
+	PortAllocator struct {
+		MinPort int `yaml:"min_port" toml:"min_port" env:"min_port" flag:"min-port"`
+		MaxPort int `yaml:"max_port" toml:"max_port" env:"max_port" flag:"max-port"`
+	}
 }
