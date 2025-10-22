@@ -2,11 +2,17 @@ package api
 
 import (
 	"log"
+	"os"
+	"time"
 
+	"github.com/Unfield/Valdock/api/handler"
+	"github.com/Unfield/Valdock/api/middleware"
 	"github.com/Unfield/Valdock/config"
-	"github.com/Unfield/Valdock/internal/api/handler"
+	"github.com/Unfield/Valdock/logging"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/valkey-io/valkey-go"
+	"go.uber.org/zap"
 )
 
 func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
@@ -17,7 +23,17 @@ func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
 
 	hdlr := handler.NewHandler(valkeyClient, cfg)
 
-	router := gin.Default()
+	logger := logging.Base.With(zap.String("service", "api"), zap.String("env", os.Getenv("ENV")))
+
+	gin.SetMode(gin.ReleaseMode)
+
+	router := gin.New()
+
+	router.Use(middleware.RequestID())
+
+	router.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+	router.Use(ginzap.RecoveryWithZap(logger, true))
+
 	v1group := router.Group("/api/v1")
 
 	v1group.GET("/health", hdlr.HealthCheckHandler)

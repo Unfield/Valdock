@@ -10,7 +10,8 @@ type ValdockConfig struct {
 	}
 	Docker struct {
 		Instance struct {
-			Net string `yaml:"net" toml:"net" env:"instance_net" flag:"instance-net"`
+			Net      string `yaml:"net" toml:"net" env:"instance_net" flag:"instance-net"`
+			DataPath string `yaml:"data_path" toml:"data_path" env:"instance_data_path" flag:"instance-data-path"`
 		}
 	}
 	PortAllocator struct {

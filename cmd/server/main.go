@@ -1,16 +1,26 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/Unfield/Valdock/api"
 	"github.com/Unfield/Valdock/config"
-	"github.com/Unfield/Valdock/internal/api"
+	dockerstatus "github.com/Unfield/Valdock/dockerStatus"
+	"github.com/Unfield/Valdock/jobs"
+	"github.com/Unfield/Valdock/logging"
 	"github.com/Unfield/cascade"
+	"go.uber.org/zap"
 )
 
 func main() {
-	log.Print("Running Valdock v0.0.1-messing-around")
+	logging.Init()
+	defer logging.Base.Sync()
+
+	serverLogger := logging.Base.With(zap.String("service", "server"), zap.String("env", os.Getenv("ENV")))
 
 	cfg := config.ValdockConfig{}
 	cfg.Server.Host = "127.0.0.1"
@@ -25,13 +35,31 @@ func main() {
 	)
 
 	if err := cfgLoader.Load(&cfg); err != nil {
-		log.Fatal(err)
+		serverLogger.Fatal("Failed to load config", zap.Error(err))
 	}
+
+	serverLogger.Info("Valdock starting", zap.String("version", "0.0.1"), zap.String("host", cfg.Server.Host), zap.Int("port", cfg.Server.Port))
 
 	apiRouter := api.NewAPIRouter(&cfg)
 
-	log.Printf("Valdock running on %s:%d\n", cfg.Server.Host, cfg.Server.Port)
-	if err := apiRouter.Run(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)); err != nil {
-		log.Fatal(err)
-	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	serverLogger.Info("Background services starting...")
+	go dockerstatus.WatchStatusUpdates(ctx, &cfg)
+	go jobs.ServeAsynqQueueServer(&cfg)
+
+	go func() {
+		err := apiRouter.Run(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port))
+		if err != nil {
+			serverLogger.Fatal("Failed to run api router", zap.Error(err))
+		}
+	}()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	<-stop
+
+	serverLogger.Info("Received termination signal, shutting down...")
+	cancel()
 }

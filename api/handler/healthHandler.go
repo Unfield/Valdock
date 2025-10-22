@@ -3,7 +3,7 @@ package handler
 import (
 	"time"
 
-	"github.com/Unfield/Valdock/internal/response"
+	"github.com/Unfield/Valdock/response"
 	"github.com/gin-gonic/gin"
 )
 

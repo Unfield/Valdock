@@ -5,6 +5,7 @@ networks:
 services:
   backend:
     build: ./
+    user: root
     restart: unless-stopped
     depends_on:
       valkey-mgmt:
@@ -16,9 +17,13 @@ services:
       - VALDOCK_VALKEY_URL=valkey-mgmt:6379
       - VALDOCK_HOST=0.0.0.0
       - VALDOCK_PORT=8080
-      - VALDOCK_INSTANCE_NET=instance_net
+      - VALDOCK_INSTANCE_NET=valdock_instance_net
+      - VALDOCK_INSTANCE_DATA_PATH=/mnt/c/Users/gpgvi/Desktop/testcontainers
+      - ENV=production
     ports:
       - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   valkey-mgmt:
     image: valkey/valkey:latest
