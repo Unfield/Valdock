@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Unfield/Valdock/models"
+	"github.com/Unfield/Valdock/namespaces"
 	"github.com/valkey-io/valkey-go"
 )
 
@@ -130,4 +131,42 @@ func (s *Store) ListInstances() ([]models.InstanceModel, error) {
 	}
 
 	return results, nil
+}
+
+func (s *Store) UpdateInstanceStatus(instanceID string, status models.InstanceStatus) error {
+	var currentVal models.InstanceModel
+	if err := s.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), &currentVal); err != nil {
+		return fmt.Errorf("failed to get current status: %w", err)
+	}
+
+	if currentVal.Status == string(status) {
+		return nil
+	}
+
+	currentVal.Status = string(status)
+
+	if err := s.SetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), currentVal); err != nil {
+		return fmt.Errorf("failed to save updated status: %w", err)
+	}
+
+	return nil
+}
+
+func (s *Store) UpdateInstanceContainerID(instanceID, containerID string) error {
+	var currentVal models.InstanceModel
+	if err := s.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), &currentVal); err != nil {
+		return fmt.Errorf("failed to get current status: %w", err)
+	}
+
+	if currentVal.ContainerID == containerID {
+		return nil
+	}
+
+	currentVal.ContainerID = containerID
+
+	if err := s.SetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), currentVal); err != nil {
+		return fmt.Errorf("failed to save updated status: %w", err)
+	}
+
+	return nil
 }

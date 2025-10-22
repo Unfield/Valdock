@@ -3,11 +3,12 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"time"
 
-	"github.com/Unfield/Valdock/internal/response"
 	"github.com/Unfield/Valdock/models"
 	"github.com/Unfield/Valdock/namespaces"
+	"github.com/Unfield/Valdock/response"
 	"github.com/Unfield/Valdock/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -58,7 +59,7 @@ func (h *Handler) CreateInstanceHandler(c *gin.Context) {
 	instance := models.InstanceModel{
 		ID:             instanceID,
 		ContainerID:    "",
-		DataPath:       "",
+		DataPath:       path.Join(h.cfg.Docker.Instance.DataPath, instanceID),
 		Name:           req.Name,
 		Port:           port,
 		ConfigTemplate: "default",
@@ -69,6 +70,11 @@ func (h *Handler) CreateInstanceHandler(c *gin.Context) {
 
 	if err := h.store.SetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instance.ID), instance); err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to save instance to db")
+		return
+	}
+
+	if err := h.jobClient.EnqueueCreateInstance(&instance); err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance creation job")
 		return
 	}
 
@@ -87,8 +93,10 @@ func (h *Handler) GetInstanceHandler(c *gin.Context) {
 }
 
 func (h *Handler) DeleteInstanceHandler(c *gin.Context) {
+	instanceID := c.Param("id")
+
 	var instance models.InstanceModel
-	err := h.store.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, c.Param("id")), &instance)
+	err := h.store.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), &instance)
 	if err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to get instances")
 		return
@@ -99,9 +107,16 @@ func (h *Handler) DeleteInstanceHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.store.DeleteKey(fmt.Sprintf("%s:%s", namespaces.INSTANCES, c.Param("id")))
-	if err != nil {
-		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to delete instances")
+	/*
+		err = h.store.DeleteKey(fmt.Sprintf("%s:%s", namespaces.INSTANCES, c.Param("id")))
+		if err != nil {
+			response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to delete instances")
+			return
+		}
+	*/
+
+	if err := h.jobClient.EnqueueDeleteInstance(instanceID); err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance deletion job")
 		return
 	}
 
