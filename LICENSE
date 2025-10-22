@@ -1,0 +1,81 @@
+Valdock - Manage and orchestrate multiple Valkey servers via Docker
+Copyright (c) 2025 Valdock Authors
+
+Licensed under the Elastic License 2.0.
+
+You may obtain a copy of the License at:
+
+    https://www.elastic.co/licensing/elastic-license
+
+## Summary
+
+You may use, copy, modify, or redistribute this software
+under the terms of the Elastic License 2.0, subject to the following
+condition:
+
+- **You may not** provide this software to others as a hosted or managed
+  service, where you host or manage the software (or a modified version of it)
+  for third parties.
+
+For all other usage — including personal, internal commercial,
+or educational use — this software is free to use under the terms of
+the Elastic License 2.0.
+
+The full text of the Elastic License 2.0 follows.
+
+--------------------------------------------------------------------------------
+
+ELASTIC LICENSE 2.0
+
+This Elastic License 2.0 (“License”) sets forth the terms under which
+Elastic makes software available. By using the software, you agree to the
+terms of this License. “Software” means the software made available by
+Elastic under this License.
+
+### 1. License Grant
+
+Subject to the terms and conditions of this License, Elastic hereby grants you
+a non-exclusive, non-transferable, non-sublicensable, revocable, royalty-free
+license to use, copy, distribute, make available, and prepare derivative works
+of the Software.
+
+### 2. Restrictions
+
+You may not provide the Software to third parties as a hosted or managed
+service, where the service provides users access to any substantial set of the
+features or functionality of the Software.
+
+You may not remove or obscure any licensing, copyright, or other notices that
+appear in the Software.
+
+### 3. Termination
+
+If you breach any of the terms or conditions of this License, this License will
+terminate automatically and you must immediately cease use of the Software.
+
+### 4. Trademarks
+
+This License does not grant you any right in the trademarks, service marks,
+brand names, or logos of Elastic or its licensors.
+
+### 5. Disclaimer of Warranty and Limitation of Liability
+
+THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. IN NO EVENT
+WILL ELASTIC OR ITS LICENSORS BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY,
+WHETHER IN CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### 6. General
+
+If any provision of this License is held to be unenforceable or invalid, that
+provision will be enforced to the maximum extent possible, and the remaining
+provisions will remain in full force and effect.
+
+This License is governed by the laws of the State of California and the United
+States of America without regard to conflict of laws principles. Any disputes
+arising hereunder shall be subject to the exclusive jurisdiction of the courts
+of Santa Clara County, California.
+
+--------------------------------------------------------------------------------

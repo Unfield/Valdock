@@ -1,0 +1,31 @@
+NOTICE
+======
+
+Valdock
+Copyright (c) 2025 Valdock Authors
+All rights reserved.
+
+This product is licensed under the Elastic License 2.0.
+A copy of the license is provided in the LICENSE file and at:
+https://www.elastic.co/licensing/elastic-license
+
+---
+
+This software includes code and components developed by the Valdock
+project contributors. By submitting code or documentation, contributors
+agree that their work may be distributed under the same Elastic License 2.0.
+
+Unless otherwise stated, all files are:
+Copyright (c) 2025 Valdock Authors
+
+---
+
+Trademarks and service marks for "Valdock" and associated graphics,
+logos, and names are property of the Valdock project. These marks may
+not be used without prior explicit permission, except as allowed by
+nominative use.
+
+---
+
+Third-party dependencies are maintained under their respective licenses.
+See relevant source subdirectories or package manifests for details.
