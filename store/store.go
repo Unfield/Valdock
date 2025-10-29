@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/Unfield/Valdock/models"
 	"github.com/Unfield/Valdock/namespaces"
@@ -144,6 +145,14 @@ func (s *Store) UpdateInstanceStatus(instanceID string, status models.InstanceSt
 	}
 
 	currentVal.Status = string(status)
+
+	if string(status) == "deleted" || string(status) == "deleting" {
+		now := time.Now()
+		currentVal.DeletedAt = &now
+		if err := s.SetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), currentVal); err != nil {
+			return fmt.Errorf("failed to save updated status: %w", err)
+		}
+	}
 
 	if err := s.SetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), currentVal); err != nil {
 		return fmt.Errorf("failed to save updated status: %w", err)

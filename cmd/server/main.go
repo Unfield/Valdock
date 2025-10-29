@@ -29,6 +29,8 @@ func main() {
 	cfg.PortAllocator.MinPort = 6380
 	cfg.PortAllocator.MaxPort = 7380
 
+	cfg.Docker.Instance.DefaultHostname = "127.0.0.1"
+
 	cfgLoader := cascade.NewLoader(
 		cascade.WithEnvPrefix("VALDOCK"),
 		cascade.WithFlags(),
@@ -55,6 +57,10 @@ func main() {
 			serverLogger.Fatal("Failed to run api router", zap.Error(err))
 		}
 	}()
+
+	serverLogger.Info("Running initial status check...")
+	dockerstatus.CheckInitialStatus(ctx, &cfg)
+	serverLogger.Info("Initial status check completed")
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)

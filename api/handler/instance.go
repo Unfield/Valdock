@@ -36,6 +36,7 @@ type usernamePasswordField struct {
 type CreateInstanceRequest struct {
 	Name           string                  `json:"name" xml:"name"`
 	ConfigTemplate string                  `json:"config_template" xml:"config_template"`
+	Hostname       string                  `json:"hostname" xml:"hostname"`
 	Users          []usernamePasswordField `json:"users" xml:"users"`
 }
 
@@ -56,16 +57,21 @@ func (h *Handler) CreateInstanceHandler(c *gin.Context) {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to provision a port")
 	}
 
+	if req.Hostname == "" {
+		req.Hostname = h.cfg.Docker.Instance.DefaultHostname
+	}
+
 	instance := models.InstanceModel{
-		ID:             instanceID,
-		ContainerID:    "",
-		DataPath:       path.Join(h.cfg.Docker.Instance.DataPath, instanceID),
-		Name:           req.Name,
-		Port:           port,
-		ConfigTemplate: "default",
-		Status:         "creating",
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		ID:              instanceID,
+		ContainerID:     "",
+		DataPath:        path.Join(h.cfg.Docker.Instance.DataPath, instanceID),
+		Name:            req.Name,
+		Port:            port,
+		PrimaryHostname: req.Hostname,
+		ConfigTemplate:  "default",
+		Status:          "creating",
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
 
 	if err := h.store.SetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instance.ID), instance); err != nil {

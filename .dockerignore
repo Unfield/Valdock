@@ -1,0 +1,9 @@
+ui/
+
+!ui/build/
+
+.git
+.gitignore
+Dockerfile
+README.md
+*.log
