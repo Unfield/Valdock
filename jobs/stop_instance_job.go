@@ -8,8 +8,13 @@ import (
 	"github.com/hibiken/asynq"
 )
 
-func NewStopInstanceJob(container_id string) (*asynq.Task, error) {
-	payload, err := json.Marshal(container_id)
+type StopInstanceContainerIDPayload struct {
+	InstanceID  string `json:"instance_id"`
+	ContainerID string `json:"containerID"`
+}
+
+func NewStopInstanceJob(containerIDPayload StopInstanceContainerIDPayload) (*asynq.Task, error) {
+	payload, err := json.Marshal(containerIDPayload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal job payload: %w", err)
 	}
@@ -18,12 +23,12 @@ func NewStopInstanceJob(container_id string) (*asynq.Task, error) {
 }
 
 func (jh *JobHandler) HandlerStopInstanceJob(ctx context.Context, t *asynq.Task) error {
-	var containerID string
-	if err := json.Unmarshal(t.Payload(), &containerID); err != nil {
+	var containerIDPayload StopInstanceContainerIDPayload
+	if err := json.Unmarshal(t.Payload(), &containerIDPayload); err != nil {
 		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
 	}
 
-	jh.DockerService.StopDockerContainer(ctx, containerID)
+	jh.DockerService.StopDockerContainer(ctx, containerIDPayload.ContainerID)
 
 	return nil
 }

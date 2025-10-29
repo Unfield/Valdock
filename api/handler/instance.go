@@ -149,7 +149,7 @@ func (h *Handler) StartInstanceHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.jobClient.EnqueueStartInstance(instance.ContainerID); err != nil {
+	if err := h.jobClient.EnqueueStartInstance(instance.ContainerID, instance.ID); err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance start job")
 		return
 	}
@@ -182,7 +182,7 @@ func (h *Handler) StopInstanceHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.jobClient.EnqueueStopInstance(instance.ContainerID); err != nil {
+	if err := h.jobClient.EnqueueStopInstance(instance.ContainerID, instance.ID); err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance stop job")
 		return
 	}
@@ -215,7 +215,7 @@ func (h *Handler) RestartInstanceHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.jobClient.EnqueueRestartInstance(instance.ContainerID); err != nil {
+	if err := h.jobClient.EnqueueRestartInstance(instance.ContainerID, instance.ID); err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance restart job")
 		return
 	}

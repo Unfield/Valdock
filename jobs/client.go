@@ -37,8 +37,8 @@ func (jc *JobClient) EnqueueDeleteInstance(instanceID string) error {
 	return err
 }
 
-func (jc *JobClient) EnqueueStartInstance(containerID string) error {
-	task, err := NewStartInstanceJob(containerID)
+func (jc *JobClient) EnqueueStartInstance(containerID, instanceID string) error {
+	task, err := NewStartInstanceJob(StartInstanceContainerIDPayload{InstanceID: instanceID, ContainerID: containerID})
 	if err != nil {
 		return fmt.Errorf("failed to enqueue start instance job: %w", err)
 	}
@@ -47,8 +47,8 @@ func (jc *JobClient) EnqueueStartInstance(containerID string) error {
 	return err
 }
 
-func (jc *JobClient) EnqueueStopInstance(containerID string) error {
-	task, err := NewStopInstanceJob(containerID)
+func (jc *JobClient) EnqueueStopInstance(containerID, instanceID string) error {
+	task, err := NewStopInstanceJob(StopInstanceContainerIDPayload{InstanceID: instanceID, ContainerID: containerID})
 	if err != nil {
 		return fmt.Errorf("failed to enqueue stop instance job: %w", err)
 	}
@@ -57,8 +57,8 @@ func (jc *JobClient) EnqueueStopInstance(containerID string) error {
 	return err
 }
 
-func (jc *JobClient) EnqueueRestartInstance(containerID string) error {
-	task, err := NewRestartInstanceJob(containerID)
+func (jc *JobClient) EnqueueRestartInstance(containerID, instanceID string) error {
+	task, err := NewRestartInstanceJob(RestartInstanceContainerIDPayload{InstanceID: instanceID, ContainerID: containerID})
 	if err != nil {
 		return fmt.Errorf("failed to enqueue restart instance job: %w", err)
 	}
