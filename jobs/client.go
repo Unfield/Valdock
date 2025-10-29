@@ -36,3 +36,33 @@ func (jc *JobClient) EnqueueDeleteInstance(instanceID string) error {
 	_, err = jc.client.Enqueue(task, asynq.Queue("default"))
 	return err
 }
+
+func (jc *JobClient) EnqueueStartInstance(containerID string) error {
+	task, err := NewStartInstanceJob(containerID)
+	if err != nil {
+		return fmt.Errorf("failed to enqueue start instance job: %w", err)
+	}
+
+	_, err = jc.client.Enqueue(task, asynq.Queue("default"))
+	return err
+}
+
+func (jc *JobClient) EnqueueStopInstance(containerID string) error {
+	task, err := NewStopInstanceJob(containerID)
+	if err != nil {
+		return fmt.Errorf("failed to enqueue stop instance job: %w", err)
+	}
+
+	_, err = jc.client.Enqueue(task, asynq.Queue("default"))
+	return err
+}
+
+func (jc *JobClient) EnqueueRestartInstance(containerID string) error {
+	task, err := NewRestartInstanceJob(containerID)
+	if err != nil {
+		return fmt.Errorf("failed to enqueue restart instance job: %w", err)
+	}
+
+	_, err = jc.client.Enqueue(task, asynq.Queue("default"))
+	return err
+}

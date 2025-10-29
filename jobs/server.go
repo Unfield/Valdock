@@ -34,6 +34,9 @@ func ServeAsynqQueueServer(cfg *config.ValdockConfig) {
 	mux.HandleFunc(TypeUpdateInstanceStatus, jobHandler.HandleUpdateInstanceStatus)
 	mux.HandleFunc(TypeUpdateInstanceContainerID, jobHandler.HandleUpdateInstanceContainerID)
 	mux.HandleFunc(TypeDeleteInstance, jobHandler.HandlerDeleteInstanceJob)
+	mux.HandleFunc(TypeStartInstance, jobHandler.HandlerStartInstanceJob)
+	mux.HandleFunc(TypeStopInstance, jobHandler.HandlerStopInstanceJob)
+	mux.HandleFunc(TypeRestartInstance, jobHandler.HandlerRestartInstanceJob)
 
 	if err := srv.Run(mux); err != nil {
 		logger.Fatal("asynq server failed", zap.Error(err))

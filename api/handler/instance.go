@@ -113,16 +113,110 @@ func (h *Handler) DeleteInstanceHandler(c *gin.Context) {
 		return
 	}
 
-	/*
-		err = h.store.DeleteKey(fmt.Sprintf("%s:%s", namespaces.INSTANCES, c.Param("id")))
-		if err != nil {
-			response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to delete instances")
-			return
-		}
-	*/
-
 	if err := h.jobClient.EnqueueDeleteInstance(instanceID); err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance deletion job")
+		return
+	}
+
+	response.SendSuccess(c, nil)
+}
+
+func (h *Handler) StartInstanceHandler(c *gin.Context) {
+	instanceID := c.Param("id")
+
+	var instance models.InstanceModel
+	err := h.store.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), &instance)
+	if err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to get instances")
+		return
+	}
+
+	switch instance.Status {
+	case string(models.StatusRunning):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is already running")
+		return
+	case string(models.StatusCreating):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is still creating")
+		return
+	case string(models.StatusDeleted):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is deleted")
+		return
+	case string(models.StatusRemoving):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is being removed")
+		return
+	case string(models.StatusRestarting):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is restarting")
+		return
+	}
+
+	if err := h.jobClient.EnqueueStartInstance(instance.ContainerID); err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance start job")
+		return
+	}
+
+	response.SendSuccess(c, nil)
+}
+
+func (h *Handler) StopInstanceHandler(c *gin.Context) {
+	instanceID := c.Param("id")
+
+	var instance models.InstanceModel
+	err := h.store.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), &instance)
+	if err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to get instances")
+		return
+	}
+
+	switch instance.Status {
+	case string(models.StatusExited):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is already stopped")
+		return
+	case string(models.StatusCreating):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is still creating")
+		return
+	case string(models.StatusDeleted):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is deleted")
+		return
+	case string(models.StatusRemoving):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is being removed")
+		return
+	}
+
+	if err := h.jobClient.EnqueueStopInstance(instance.ContainerID); err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance stop job")
+		return
+	}
+
+	response.SendSuccess(c, nil)
+}
+
+func (h *Handler) RestartInstanceHandler(c *gin.Context) {
+	instanceID := c.Param("id")
+
+	var instance models.InstanceModel
+	err := h.store.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID), &instance)
+	if err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to get instances")
+		return
+	}
+
+	switch instance.Status {
+	case string(models.StatusCreating):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is still creating")
+		return
+	case string(models.StatusDeleted):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is deleted")
+		return
+	case string(models.StatusRemoving):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is being removed")
+		return
+	case string(models.StatusRestarting):
+		response.SendError(c, http.StatusBadRequest, response.BadRequest, "instance is already restarting")
+		return
+	}
+
+	if err := h.jobClient.EnqueueRestartInstance(instance.ContainerID); err != nil {
+		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to queue instance restart job")
 		return
 	}
 
