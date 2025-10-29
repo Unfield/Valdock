@@ -44,9 +44,9 @@ func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
 	v1group.POST("/instances", hdlr.CreateInstanceHandler)
 	v1group.GET("/instances/:id", hdlr.GetInstanceHandler)
 	v1group.DELETE("/instances/:id", hdlr.DeleteInstanceHandler)
-	//v1group.POST("/instances/:id/start")
-	//v1group.POST("/instances/:id/stop")
-	//v1group.POST("/instances/:id/restart")
+	v1group.POST("/instances/:id/start")
+	v1group.POST("/instances/:id/stop")
+	v1group.POST("/instances/:id/restart")
 	//v1group.GET("/instances/:id/stats")
 
 	// ACL Management
