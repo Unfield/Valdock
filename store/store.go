@@ -179,3 +179,31 @@ func (s *Store) UpdateInstanceContainerID(instanceID, containerID string) error 
 
 	return nil
 }
+
+func (s *Store) ListApiKeys() ([]models.APIKey, error) {
+	var results []models.APIKey
+	var cursor uint64 = 0
+	ctx := context.Background()
+
+	for {
+		res, err := s.kv.Do(ctx, s.kv.B().Scan().Cursor(cursor).
+			Match("apikeys:*").Count(100).Build()).AsScanEntry()
+		if err != nil {
+			return nil, fmt.Errorf("scan error: %w", err)
+		}
+
+		keys := res.Elements
+		for _, key := range keys {
+			var currentVal models.APIKey
+			s.GetJSON(key, &currentVal)
+			results = append(results, currentVal)
+		}
+
+		cursor = res.Cursor
+		if cursor == 0 {
+			break
+		}
+	}
+
+	return results, nil
+}

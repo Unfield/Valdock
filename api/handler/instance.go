@@ -8,6 +8,7 @@ import (
 
 	"github.com/Unfield/Valdock/models"
 	"github.com/Unfield/Valdock/namespaces"
+	"github.com/Unfield/Valdock/permissions"
 	"github.com/Unfield/Valdock/response"
 	"github.com/Unfield/Valdock/utils"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,17 @@ type GetInstancesResponse struct {
 }
 
 func (h *Handler) GetInstancesHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceRead, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	instances, err := h.store.ListInstances()
 	if err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to list instances")
@@ -41,6 +53,17 @@ type CreateInstanceRequest struct {
 }
 
 func (h *Handler) CreateInstanceHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceCreate, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	var req CreateInstanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.SendError(c, http.StatusBadRequest, response.BadRequest, "invalid body")
@@ -88,6 +111,17 @@ func (h *Handler) CreateInstanceHandler(c *gin.Context) {
 }
 
 func (h *Handler) GetInstanceHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceRead, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	var instance models.InstanceModel
 	err := h.store.GetJSON(fmt.Sprintf("%s:%s", namespaces.INSTANCES, c.Param("id")), &instance)
 	if err != nil {
@@ -99,6 +133,17 @@ func (h *Handler) GetInstanceHandler(c *gin.Context) {
 }
 
 func (h *Handler) DeleteInstanceHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceDelete, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	instanceID := c.Param("id")
 
 	var instance models.InstanceModel
@@ -122,6 +167,17 @@ func (h *Handler) DeleteInstanceHandler(c *gin.Context) {
 }
 
 func (h *Handler) StartInstanceHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceStart, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	instanceID := c.Param("id")
 
 	var instance models.InstanceModel
@@ -158,6 +214,17 @@ func (h *Handler) StartInstanceHandler(c *gin.Context) {
 }
 
 func (h *Handler) StopInstanceHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceStop, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	instanceID := c.Param("id")
 
 	var instance models.InstanceModel
@@ -191,6 +258,17 @@ func (h *Handler) StopInstanceHandler(c *gin.Context) {
 }
 
 func (h *Handler) RestartInstanceHandler(c *gin.Context) {
+	perms, ok := c.Get("permissions")
+	if !ok {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+	userPerms := perms.([]permissions.Permission)
+	if !permissions.HasOnePermission(userPerms, permissions.InstanceRestart, permissions.InstanceAdmin) {
+		response.SendError(c, http.StatusForbidden, response.Forbidden, "forbidden")
+		return
+	}
+
 	instanceID := c.Param("id")
 
 	var instance models.InstanceModel

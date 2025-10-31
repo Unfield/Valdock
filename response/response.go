@@ -32,6 +32,8 @@ const (
 	NoError             ApiError = ""
 	InternalServerError ApiError = "internal server error"
 	BadRequest          ApiError = "bad request"
+	Forbidden           ApiError = "forbidden"
+	Unauthorized        ApiError = "unauthorized"
 )
 
 type ApiResponse struct {

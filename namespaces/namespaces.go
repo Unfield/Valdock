@@ -5,4 +5,5 @@ const (
 	INTERNAL_LAST_PORT      = "internal:last_port"
 	INSTANCES               = "instances"
 	ACLUSERS                = "aclusers"
+	API_KEYS                = "apikeys"
 )

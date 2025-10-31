@@ -28,6 +28,7 @@ func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.New()
+	router.GET("/api/v1/health", hdlr.HealthCheckHandler)
 
 	router.Use(middleware.RequestID())
 
@@ -36,10 +37,19 @@ func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
 
 	v1group := router.Group("/api/v1")
 
-	v1group.GET("/health", hdlr.HealthCheckHandler)
+	authMiddleware := middleware.NewAuthMiddleware(valkeyClient, cfg)
+	v1group.Use(authMiddleware.Serve())
+
+	// Api Key Management
+	v1group.GET("/api-keys", hdlr.GetApiKeysHandler)
+	v1group.POST("/api-keys", hdlr.CreateApiKeyHandler)
+	v1group.GET("/api-keys/:key", hdlr.GetApiKeyHandler)
+	v1group.DELETE("/api-keys/:key", hdlr.DeleteApiKeyHandler)
+	v1group.POST("/api-keys/:key/disable", hdlr.UpdateApiKeyStateHandler("disable"))
+	v1group.POST("/api-keys/:key/enable", hdlr.UpdateApiKeyStateHandler("enable"))
+	v1group.POST("/api-keys/:key/expire", hdlr.UpdateApiKeyStateHandler("expire"))
 
 	// Instance Management
-
 	v1group.GET("/instances", hdlr.GetInstancesHandler)
 	v1group.POST("/instances", hdlr.CreateInstanceHandler)
 	v1group.GET("/instances/:id", hdlr.GetInstanceHandler)
@@ -50,7 +60,6 @@ func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
 	//v1group.GET("/instances/:id/stats")
 
 	// ACL Management
-
 	//v1group.GET("/instances/:id/acls")
 	//v1group.POST("/instances/:id/acls")
 	//v1group.PUT("/instances/:id/acls/:username")

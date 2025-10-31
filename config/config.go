@@ -5,6 +5,9 @@ type ValdockConfig struct {
 		Port int    `yaml:"port" toml:"port" env:"PORT" flag:"port"`
 		Host string `yaml:"host" toml:"host" env:"HOST" flag:"host"`
 	}
+	API struct {
+		MasterKey string `yaml:"master_key" toml:"master_key" env:"API_MASTER_KEY" flag:"api-master-key"`
+	}
 	KV struct {
 		Url string `yaml:"url" toml:"url" env:"VALKEY_URL" flag:"valkey-url"`
 	}
