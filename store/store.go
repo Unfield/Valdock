@@ -23,6 +23,14 @@ func NewStore(kv valkey.Client) *Store {
 	}
 }
 
+func (s *Store) KeyExists(key string) bool {
+	ctx := context.Background()
+	exists, _ := s.kv.Do(ctx,
+		s.kv.B().Exists().Key(key).Build(),
+	).AsBool()
+	return exists
+}
+
 func (s *Store) DeleteKey(key string) error {
 	ctx := context.Background()
 	return s.kv.Do(ctx,
@@ -195,6 +203,34 @@ func (s *Store) ListApiKeys() ([]models.APIKey, error) {
 		keys := res.Elements
 		for _, key := range keys {
 			var currentVal models.APIKey
+			s.GetJSON(key, &currentVal)
+			results = append(results, currentVal)
+		}
+
+		cursor = res.Cursor
+		if cursor == 0 {
+			break
+		}
+	}
+
+	return results, nil
+}
+
+func (s *Store) ListACLs() ([]models.ACLUserModel, error) {
+	var results []models.ACLUserModel
+	var cursor uint64 = 0
+	ctx := context.Background()
+
+	for {
+		res, err := s.kv.Do(ctx, s.kv.B().Scan().Cursor(cursor).
+			Match("aclusers:*").Count(100).Build()).AsScanEntry()
+		if err != nil {
+			return nil, fmt.Errorf("scan error: %w", err)
+		}
+
+		keys := res.Elements
+		for _, key := range keys {
+			var currentVal models.ACLUserModel
 			s.GetJSON(key, &currentVal)
 			results = append(results, currentVal)
 		}

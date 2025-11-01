@@ -60,10 +60,10 @@ func NewAPIRouter(cfg *config.ValdockConfig) *gin.Engine {
 	//v1group.GET("/instances/:id/stats")
 
 	// ACL Management
-	//v1group.GET("/instances/:id/acls")
-	//v1group.POST("/instances/:id/acls")
-	//v1group.PUT("/instances/:id/acls/:username")
-	//v1group.DELETE("/instances/:id/acls/:username")
+	v1group.GET("/instances/:instance_id/acls", hdlr.GetACLUsers)
+	v1group.POST("/instances/:instance_id/acls", hdlr.CreateNewACLUser)
+	v1group.PUT("/instances/:instance_id/acls/:username", hdlr.UpdateAclUserHandler)
+	v1group.DELETE("/instances/:instance_id/acls/:username", hdlr.DeleteAclUserHandler)
 
 	return router
 }
