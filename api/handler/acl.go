@@ -68,7 +68,7 @@ func (h *Handler) CreateNewACLUser(c *gin.Context) {
 		return
 	}
 
-	instanceID := c.Param("instance_id")
+	instanceID := c.Param("id")
 
 	if !h.store.KeyExists(fmt.Sprintf("%s:%s", namespaces.INSTANCES, instanceID)) {
 		response.SendError(c, http.StatusBadRequest, response.BadRequest, "failed to add acl user: unknown instance")
@@ -137,7 +137,7 @@ func (h *Handler) UpdateAclUserHandler(c *gin.Context) {
 		return
 	}
 
-	instanceID := c.Param("instance_id")
+	instanceID := c.Param("id")
 
 	var aclUser models.ACLUserModel
 	if err := h.store.GetJSON(fmt.Sprintf("%s:%s:%s", namespaces.ACLUSERS, instanceID, req.Username), &aclUser); err != nil {
@@ -213,7 +213,7 @@ func (h *Handler) DeleteAclUserHandler(c *gin.Context) {
 		return
 	}
 
-	instanceID := c.Param("instance_id")
+	instanceID := c.Param("id")
 
 	if err := h.store.DeleteKey(fmt.Sprintf("%s:%s:%s", namespaces.ACLUSERS, instanceID, req.Username)); err != nil {
 		response.SendError(c, http.StatusInternalServerError, response.InternalServerError, "failed to delete acl user: internal server error")
