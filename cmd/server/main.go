@@ -12,6 +12,7 @@ import (
 	dockerstatus "github.com/Unfield/Valdock/dockerStatus"
 	"github.com/Unfield/Valdock/jobs"
 	"github.com/Unfield/Valdock/logging"
+	"github.com/Unfield/Valdock/version"
 	"github.com/Unfield/cascade"
 	"go.uber.org/zap"
 )
@@ -40,7 +41,7 @@ func main() {
 		serverLogger.Fatal("Failed to load config", zap.Error(err))
 	}
 
-	serverLogger.Info("Valdock starting", zap.String("version", "0.0.1"), zap.String("host", cfg.Server.Host), zap.Int("port", cfg.Server.Port))
+	serverLogger.Info("Valdock starting", zap.String("version", version.FullVersion()), zap.String("host", cfg.Server.Host), zap.Int("port", cfg.Server.Port))
 
 	apiRouter := api.NewAPIRouter(&cfg)
 

@@ -6,4 +6,5 @@ const (
 	INSTANCES               = "instances"
 	ACLUSERS                = "aclusers"
 	API_KEYS                = "apikeys"
+	CONFIG                  = "config"
 )

@@ -52,3 +52,11 @@ func (u ACLUserModel) ToValkeyACL() string {
 
 	return strings.Join(parts, " ")
 }
+
+func MakeACLFile(users []ACLUserModel) string {
+	var res string
+	for _, user := range users {
+		res = res + user.ToValkeyACL()
+	}
+	return res
+}
